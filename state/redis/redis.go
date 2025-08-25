@@ -468,8 +468,8 @@ func (r *StateStore) registerSchemas(ctx context.Context) error {
 
 // comparison pseudo-constants to avoid allocations
 var (
-	dataBytes  = []byte("data")
-	valueBytes = []byte("version")
+	dataBytes    = []byte("data")
+	versionBytes = []byte("version")
 )
 
 func (r *StateStore) getKeyVersion(vals []any) (data string, version *string, err error) {
@@ -497,12 +497,17 @@ func (r *StateStore) getKeyVersion(vals []any) (data string, version *string, er
 					data = s
 					seenData = true
 				}
-			} else if bytes.Equal(key, valueBytes) {
+			} else if bytes.Equal(key, versionBytes) {
 				if s, ok := toString(vals[i+1]); ok {
 					version = &s
 					seenVersion = true
 				}
 			}
+		}
+
+		// Early exit once both values have been found
+		if seenData && seenVersion {
+			break
 		}
 	}
 	if !seenData || !seenVersion {
