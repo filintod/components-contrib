@@ -18,12 +18,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	jsoniter "github.com/json-iterator/go"
 	"reflect"
 	"strconv"
 	"strings"
 	"sync/atomic"
-
-	jsoniter "github.com/json-iterator/go"
 
 	rediscomponent "github.com/dapr/components-contrib/common/component/redis"
 	"github.com/dapr/components-contrib/contenttype"
@@ -518,7 +517,7 @@ func toString(v any) (string, bool) {
 	case string:
 		return x, true
 	case []byte:
-		return string(x), true // some allocation here unless we go to unsafe
+		return string(x), true // some allocation here unless we go to unsafe: return unsafe.String(unsafe.SliceData(x), len(x)), true
 	default:
 		return "", false
 	}
